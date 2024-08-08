@@ -27,19 +27,7 @@ Xây dựng website quản lý bán vé xem phim với các tính năng chí
 	- Sandbox của VNPay: Tích hợp ứng dụng thanh toán của VNPAY trong việc đặt vé.
 <br/><br/>
 
-# **4. Cài đặt:**
-#### Yêu cầu phải máy tính phải cài đặt sẵn `docker` và `docker-compose`
-#### Tại thư mục mẹ, gõ lệnh dưới để chạy project:
-```shell
-docker-compose up --build --no-deps
-```
-#### Dừng project bằng `Ctrl + C` và gõ lệnh:
-```shell
-docker-compose down
-```
-<br/>
-
-# **5. Thông tin:**
+# **4. Thông tin:**
 ### **A. Các Website:**
 - Website chính (Front-end): http://localhost:80
 	- Hiển thị nội dung liên quan đến phim và cho phép đặt/thanh toán vé.
@@ -71,7 +59,7 @@ docker-compose down
 - Mật khẩu OTP:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`123456`
 <br/><br/>
 
-# **6. Mô hình hoạt động:**
+# **5. Mô hình hoạt động:**
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**A. Mô hình Database:**
 <div align='center'>
 	<img src='images/so_do_databases.PNG' />
@@ -96,7 +84,7 @@ docker-compose down
 </div>
 <br/><br/>
 
-# **7. Chức năng của trang web:**
+# **6. Chức năng của trang web:**
 ### **A. Chức năng của User:**
 - Đăng ký
 	+ Xác thực tài khoản qua email
@@ -116,7 +104,7 @@ docker-compose down
 - Thêm, xóa, sữa dữ liệu liên quan đến các suất chiếu phim như: phim chiếu, lịch chiếu, phòng chiếu, số lượng ghế và lưu lại thông tin thanh toán.
 <br/><br/>
 
-# **8. Bảo mật:**
+# **7. Bảo mật:**
 ### Sử dụng JWT (JSON Web Token) để phân quyền truy cập và xác thực user.
 ### Cấu trúc của token:
 #### &nbsp;&nbsp;1. Thuật toán sử dụng: `RS256` với key có kích thước `2048 bit`
@@ -128,8 +116,8 @@ docker-compose down
 
 <br/>
 
-# **9. Demo:**
-## **9.1. Website cho User:**
+# **8. Demo:**
+## **8.1. Website cho User:**
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**A. Trang Chủ**
 <div align='center'>
@@ -175,7 +163,7 @@ docker-compose down
 </div>
 </br></br>
 
-## **9.2. Website cho Admin:**
+## **8.2. Website cho Admin:**
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**A. Đăng nhập Admin:**
 <div align='center'>
 	<img src='images/adminlogin.png' />
@@ -194,54 +182,9 @@ docker-compose down
 </div>
 </br></br>
 
-## **9.3. Website cho API:**
+## **8.3. Website cho API:**
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Trang API document:**
 <div align='center'>
 	<img src='images/swagger_api.jpg' />
 </div>
 </br></br>
-
-# **10. Các Lỗ hổng được thiết kế trong website:**
-### **A. Bypass xác thực của JWT Token:**
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Web API sử dụng JWT token để xác thực và phân quyền người dùng, thuật toán được sử dụng cho việc cấp và xác thực là RS256. Lỗ hổng này được mô phỏng dựa trên CVE-2015-9235, xảy ra là trang web sẽ dựa vào thuật toán trên phần header của token để thực hiện quy trình xác thực sẽ thuật toán đó. Khi trang web sử dụng thuật toán RS/ES để ký (dùng private key) và xác thực (dùng public key) cho token, nhưng khi kẻ tấn công có được public key, chúng sẽ sử dụng thuật toán HS (dùng public key cho cả việc ký và xác thực) để tạo token, khi đưa cho web kiểm tra, nó sẽ dựa vào thuật toán trong phần header của token để lựa chọn thuật toán xác thực, và vì cả thuật toán RS/ES và HS đều dùng public key để xác thực nên việc bypass sẽ thành công. 
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Mức độ ảnh hưởng:** Cao.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Phạm vi ảnh hưởng:** Toàn bộ các trang web.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Hậu quả:** Leo thang đặc quyền, có khả năng lấy và chỉnh sửa toàn bộ data có trong database thông qua các API.
-</br>
-
-### **B. Broken Access Control:**
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Uri GET /api/auth/login không có cơ chế giới hạn lượt truy cập sau nhiều lần đăng nhập không thành công dẫn đến kẻ tấn công có thể thực hiện tấn công brute-force để dò mật khẩu của nạn nhân.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Mức độ ảnh hưởng:** Trung bình.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Phạm vi ảnh hưởng:** Chỉ ảnh hường đến user để mật khẩu yếu và dễ đoán.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Hậu quả:** Đánh cắp thông tin và kiểm soát tài khoản của nạn nhân.
-</br>
-
-### **C. Insecure Authentication:**
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Trang web có chức năng thay đổi mật khẩu mới khi người dùng quên mật khẩu, khi đó một mã xác thực sẽ được gửi đến mail của người dùng, cho phép họ thay đổi mật khẩu cho mình. Trong mã xác thực này chứ tên của người dùng và thời hạn sử dụng, trang web sẽ dựa trên các thông tin này để cho phép đổi mật khẩu mới hay không, tuy nhiên mã xác thực này rất yếu, kẻ tấn công có khả năng tạo một mã xác thực khác tương tự và có thể thay đổi mật khẩu của bất kỳ user nào trong hệ thống.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Mức độ ảnh hưởng:** Cao.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Phạm vi ảnh hưởng:** Tất cả user tồn tại trong hệ thống.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Hậu quả:** Đánh cắp thông tin và kiểm soát tài khoản của nạn nhân. Leo thang đặc quyền đối các tài khoản admin.
-</br>
-
-### **D. Lỗ hổng**
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lỗ hổng
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Mức độ ảnh hưởng:**
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Phạm vi ảnh hưởng:**
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Hậu quả:**
-</br>
-
-### **E. Lỗ hổng**
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lỗ hổng
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Mức độ ảnh hưởng:**
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Phạm vi ảnh hưởng:**
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Hậu quả:**
-</br>
-
-### **F. Lỗ hổng**
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lỗ hổng
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Mức độ ảnh hưởng:**
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Phạm vi ảnh hưởng:**
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Hậu quả:**
-</br>
-
----
